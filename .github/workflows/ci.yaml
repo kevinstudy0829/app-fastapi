@@ -1,4 +1,4 @@
-name: CI - Build and Push
+name: CI/CD - Build, Push, Deploy
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
       - 'app/**'
 
 jobs:
-  build:
+  build-and-update:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -25,3 +25,14 @@ jobs:
           context: ./app
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/docker-fastapi:${{ github.sha }}
+
+      - name: Update Config Repo
+        run: |
+          git clone https://x-access-token:${{ secrets.CONFIG_REPO_TOKEN }}@github.com/kevinstudy0829/hello-config.git
+          cd hello-config
+          sed -i "s|image: .*/docker-fastapi:.*|image: ${{ secrets.DOCKER_USERNAME }}/docker-fastapi:${{ github.sha }}|" fastapi-deploy.yaml
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add fastapi-deploy.yaml
+          git commit -m "chore: update image to ${{ github.sha }}"
+          git push
