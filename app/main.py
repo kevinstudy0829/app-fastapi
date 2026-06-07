@@ -15,7 +15,7 @@ def read_root():
         "DB_name": os.getenv("DATABASE_USER"),
         "DB_pass": os.getenv("DATABASE_PASSWORD"),
         "api_key": os.getenv("API_KEY"),
-        "version": "v4"
+        "version": "v5"
     }
 
 # 定義一個帶參數的路由
